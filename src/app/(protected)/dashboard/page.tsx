@@ -2,7 +2,7 @@ import { getDashboardMetrics, formatMinutes } from "@/lib/analytics";
 import { DashboardCard } from "@/components/DashboardCard";
 import { DashboardChart } from "@/components/DashboardChart";
 import { QuickActions } from "@/components/QuickActions";
-import { Clock, Calendar, Flame, Target, TrendingUp, Award } from "lucide-react";
+import { Clock, Calendar, Flame, Target, TrendingUp, Award, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = {
@@ -57,6 +57,14 @@ export default async function DashboardPage() {
                         subtitle="Average this month"
                         icon={TrendingUp}
                         iconColor="text-green-500"
+                    />
+
+                    <DashboardCard
+                        title="Honesty Score"
+                        value={metrics.averageHonestyScore !== null ? `${metrics.averageHonestyScore}%` : "--"}
+                        subtitle="Self-reported avg"
+                        icon={ShieldCheck}
+                        iconColor="text-purple-500"
                     />
                 </div>
 

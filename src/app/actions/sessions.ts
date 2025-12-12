@@ -73,10 +73,12 @@ export async function startSession(
     return { success: true, session: data };
 }
 
+import { calculateHonestyImpact } from "@/lib/honesty/calculateImpact";
+
 export async function endSession(
     sessionId: string,
-    focusScore: number,
-    honestyScore: number,
+    focusRating: number,
+    honestyDeclared: boolean,
     notes?: string
 ): Promise<{ success: boolean; session?: StudySession; error?: string }> {
     const supabase = await createServerClient();
@@ -105,13 +107,29 @@ export async function endSession(
         (endedAt.getTime() - startedAt.getTime()) / (1000 * 60)
     );
 
+    // Get distraction count
+    const { count: distractionCount } = await supabase
+        .from("distraction_events")
+        .select("*", { count: "exact", head: true })
+        .eq("session_id", sessionId);
+
+    // Calculate impacts
+    const { honestyScore, honestyImpact, focusScore } = calculateHonestyImpact(
+        focusRating,
+        honestyDeclared,
+        distractionCount || 0,
+        durationMinutes
+    );
+
     const { data, error } = await supabase
         .from("study_sessions")
         .update({
             ended_at: endedAt.toISOString(),
             actual_duration_minutes: durationMinutes,
-            focus_score: Math.min(100, Math.max(0, focusScore)),
-            honesty_score: Math.min(100, Math.max(0, honestyScore)),
+            focus_score: focusScore,
+            honesty_score: honestyScore,
+            honesty_declared: honestyDeclared,
+            honesty_impact: honestyImpact,
             notes: notes || null,
             is_completed: true,
         })
@@ -124,12 +142,14 @@ export async function endSession(
     }
 
     if (session.subject_id) {
-        await supabase.rpc("update_subject_total_minutes", {
-            p_subject_id: session.subject_id,
-            p_minutes: durationMinutes,
-        }).catch(() => {
-            // Ignore RPC errors, we'll update this manually if needed
-        });
+        try {
+            await supabase.rpc("update_subject_total_minutes", {
+                p_subject_id: session.subject_id,
+                p_minutes: durationMinutes,
+            });
+        } catch (error) {
+            // Ignore RPC errors
+        }
     }
 
     revalidatePath("/sessions");
