@@ -56,7 +56,10 @@ export default function SignUpPage() {
                     </p>
                     <div className="pt-4">
                         <Link href="/sign-in">
-                            <Button variant="secondary" className="w-full">
+                            <Button
+                                variant="secondary"
+                                className="w-full bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900"
+                            >
                                 Back to Sign In
                             </Button>
                         </Link>
