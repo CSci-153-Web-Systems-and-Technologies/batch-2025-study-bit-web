@@ -74,6 +74,7 @@ export async function startSession(
 }
 
 import { calculateHonestyImpact } from "@/lib/honesty/calculateImpact";
+import { recalculateStreak } from "@/app/actions/streaks";
 
 export async function endSession(
     sessionId: string,
@@ -151,6 +152,9 @@ export async function endSession(
             // Ignore RPC errors
         }
     }
+
+    // Update streak asynchronously (don't block response strictly, or do block if important)
+    await recalculateStreak();
 
     revalidatePath("/sessions");
     revalidatePath("/dashboard");

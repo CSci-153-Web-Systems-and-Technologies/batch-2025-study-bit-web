@@ -2,6 +2,7 @@
 
 import { createServerClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
+import { recalculateStreak } from "@/app/actions/streaks";
 import type { Database } from "@/types/supabase";
 
 type StudySession = Database["public"]["Tables"]["study_sessions"]["Row"];
@@ -56,6 +57,7 @@ export async function createManualSession(formData: {
 
     revalidatePath("/sessions");
     revalidatePath("/my-decks");
+    await recalculateStreak();
     return { success: true, session: data };
 }
 
@@ -106,6 +108,7 @@ export async function updateSession(
 
     revalidatePath("/sessions");
     revalidatePath("/my-decks");
+    await recalculateStreak();
     return { success: true, session: data };
 }
 
@@ -133,6 +136,7 @@ export async function deleteSession(
 
     revalidatePath("/sessions");
     revalidatePath("/my-decks");
+    await recalculateStreak();
     return { success: true };
 }
 
