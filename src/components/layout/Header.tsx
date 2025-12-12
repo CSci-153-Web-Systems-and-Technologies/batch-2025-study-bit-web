@@ -12,9 +12,7 @@ interface HeaderProps {
     user: SupabaseUser | null;
 }
 
-const navLinks = [
-    { href: "/", label: "Home" },
-];
+const navLinks: { href: string; label: string }[] = [];
 
 export function Header({ user }: HeaderProps) {
     const pathname = usePathname();
@@ -32,23 +30,25 @@ export function Header({ user }: HeaderProps) {
                         <span className="text-cyan-400">STUDYBIT</span>
                     </Link>
 
-                    <ul className="hidden md:flex items-center gap-1">
-                        {navLinks.map((link) => (
-                            <li key={link.href}>
-                                <Link
-                                    href={link.href}
-                                    className={cn(
-                                        "px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950",
-                                        pathname === link.href
-                                            ? "text-white bg-white/10"
-                                            : "text-neutral-400 hover:text-white hover:bg-white/5"
-                                    )}
-                                >
-                                    {link.label}
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
+                    {navLinks.length > 0 && (
+                        <ul className="hidden md:flex items-center gap-1">
+                            {navLinks.map((link) => (
+                                <li key={link.href}>
+                                    <Link
+                                        href={link.href}
+                                        className={cn(
+                                            "px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950",
+                                            pathname === link.href
+                                                ? "text-white bg-white/10"
+                                                : "text-neutral-400 hover:text-white hover:bg-white/5"
+                                        )}
+                                    >
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
 
                     <div className="hidden md:flex items-center gap-3">
                         {user ? (

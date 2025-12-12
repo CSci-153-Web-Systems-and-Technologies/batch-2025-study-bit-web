@@ -41,18 +41,26 @@ export function Sidebar({ children }: SidebarProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="min-h-screen flex">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg border border-neutral-200"
-                aria-label={isOpen ? "Close menu" : "Open menu"}
-            >
-                {isOpen ? (
-                    <X className="w-6 h-6 text-neutral-600" />
-                ) : (
-                    <Menu className="w-6 h-6 text-neutral-600" />
-                )}
-            </button>
+        <div className="min-h-screen flex flex-col lg:flex-row">
+            <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-neutral-200 flex items-center px-4 z-50">
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="p-2 -ml-2 rounded-lg hover:bg-neutral-100"
+                    aria-label={isOpen ? "Close menu" : "Open menu"}
+                >
+                    {isOpen ? (
+                        <X className="w-6 h-6 text-neutral-600" />
+                    ) : (
+                        <Menu className="w-6 h-6 text-neutral-600" />
+                    )}
+                </button>
+                <Link href="/" className="flex items-center gap-2 ml-2">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
+                        <Timer className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="font-bold text-cyan-500">STUDYBIT</span>
+                </Link>
+            </div>
 
             {isOpen && (
                 <div
@@ -143,7 +151,7 @@ export function Sidebar({ children }: SidebarProps) {
                 </nav>
             </aside>
 
-            <main className="flex-1 lg:ml-64 bg-neutral-50 min-h-screen">
+            <main className="flex-1 lg:ml-64 bg-neutral-50 min-h-screen pt-14 lg:pt-0">
                 {children}
             </main>
         </div>
