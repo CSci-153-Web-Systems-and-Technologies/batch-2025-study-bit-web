@@ -1,0 +1,118 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import {
+    Timer,
+    LayoutDashboard,
+    Library,
+    TrendingUp,
+    Clock,
+    User,
+    Settings,
+    LogOut,
+} from "lucide-react";
+
+const overviewLinks = [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/my-decks", label: "My decks", icon: Library },
+    { href: "/progress", label: "Progress", icon: TrendingUp },
+    { href: "/timer", label: "Timer", icon: Clock },
+    { href: "/profile", label: "Profile", icon: User },
+];
+
+const settingsLinks = [
+    { href: "/settings", label: "Settings", icon: Settings },
+    { href: "/sign-out", label: "Logout", icon: LogOut, isLogout: true },
+];
+
+interface SidebarProps {
+    children: React.ReactNode;
+}
+
+export function Sidebar({ children }: SidebarProps) {
+    const pathname = usePathname();
+
+    return (
+        <div className="min-h-screen flex">
+            <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-neutral-200 flex flex-col z-40">
+                <div className="p-6 border-b border-neutral-100">
+                    <Link
+                        href="/"
+                        className="flex items-center gap-2 font-bold text-xl"
+                    >
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
+                            <Timer className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="text-cyan-500">STUDYBIT</span>
+                    </Link>
+                </div>
+
+                <nav className="flex-1 p-4 overflow-y-auto">
+                    <div className="mb-6">
+                        <h3 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-3 px-3">
+                            Overview
+                        </h3>
+                        <ul className="space-y-1">
+                            {overviewLinks.map((link) => {
+                                const Icon = link.icon;
+                                const isActive = pathname === link.href;
+                                return (
+                                    <li key={link.href}>
+                                        <Link
+                                            href={link.href}
+                                            className={cn(
+                                                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                                                isActive
+                                                    ? "bg-cyan-50 text-cyan-600"
+                                                    : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
+                                            )}
+                                        >
+                                            <Icon className={cn("w-5 h-5", isActive ? "text-cyan-500" : "text-neutral-400")} />
+                                            {link.label}
+                                        </Link>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-3 px-3">
+                            Settings
+                        </h3>
+                        <ul className="space-y-1">
+                            {settingsLinks.map((link) => {
+                                const Icon = link.icon;
+                                const isActive = pathname === link.href;
+                                return (
+                                    <li key={link.href}>
+                                        <Link
+                                            href={link.href}
+                                            className={cn(
+                                                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                                                link.isLogout
+                                                    ? "text-red-500 hover:bg-red-50"
+                                                    : isActive
+                                                        ? "bg-cyan-50 text-cyan-600"
+                                                        : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
+                                            )}
+                                        >
+                                            <Icon className={cn("w-5 h-5", link.isLogout ? "text-red-400" : isActive ? "text-cyan-500" : "text-neutral-400")} />
+                                            {link.label}
+                                        </Link>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
+                </nav>
+            </aside>
+
+            <main className="flex-1 ml-64 bg-neutral-50 min-h-screen">
+                {children}
+            </main>
+        </div>
+    );
+}
