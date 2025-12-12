@@ -25,7 +25,7 @@ const overviewLinks = [
     { href: "/my-decks", label: "Study Log", icon: Library },
     { href: "/goals", label: "Goals", icon: Target },
     { href: "/achievements", label: "Achievements", icon: Trophy },
-    { href: "/progress", label: "Progress", icon: TrendingUp },
+    { href: "/reports", label: "Reports", icon: TrendingUp },
     { href: "/profile", label: "Profile", icon: User },
 ];
 
