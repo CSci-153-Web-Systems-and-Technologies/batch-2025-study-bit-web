@@ -38,8 +38,18 @@ export function SubjectSelect({
     const [newSubjectColor, setNewSubjectColor] = useState(COLORS[4]); // Cyan default
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const [createError, setCreateError] = useState<string | null>(null);
+    const [tempCreatedSubject, setTempCreatedSubject] = useState<Subject | null>(null);
+
     const router = useRouter();
-    const selectedSubject = subjects.find((s) => s.id === value);
+
+    // Fallback found subject or optimistic one
+    const selectedSubject = subjects.find((s) => s.id === value)
+        || (value && tempCreatedSubject?.id === value ? tempCreatedSubject : undefined);
+
+    const allSubjects = tempCreatedSubject && !subjects.find(s => s.id === tempCreatedSubject.id)
+        ? [...subjects, tempCreatedSubject]
+        : subjects;
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
@@ -47,37 +57,40 @@ export function SubjectSelect({
             if (!target.closest("[data-subject-select]")) {
                 setIsOpen(false);
                 setIsCreating(false);
+                setCreateError(null);
             }
         }
 
         document.addEventListener("click", handleClickOutside);
         return () => document.removeEventListener("click", handleClickOutside);
-    }, []);
+    }, [subjects, tempCreatedSubject]); // Added deps
 
     const handleCreateSubject = async () => {
+        setCreateError(null);
+        console.log("Creating subject:", newSubjectName);
         if (!newSubjectName.trim()) return;
+
         setIsSubmitting(true);
 
         try {
             const result = await createSubject(newSubjectName, newSubjectColor);
+            console.log("Create result:", result);
             if (result.success && result.subject) {
-                // Optimistic or wait for refresh? 
-                // Since this component relies on 'subjects' prop, we MUST wait for parent refresh
-                router.refresh();
+                setTempCreatedSubject(result.subject);
+                onChange(result.subject.id);
 
-                // We can optimistically call onChange, but the Name won't show in the main button until subjects prop updates 
-                // UNLESS we handle the display logic to accept a partial subject?
-                // For valid UX, we set value and close. 
-                // The main button will show "Select a subject" briefly until prop updates unless we handle it locally.
-                // But typically action + refresh is fast.
+                // Refresh
+                router.refresh();
 
                 setIsOpen(false);
                 setIsCreating(false);
                 setNewSubjectName("");
-                onChange(result.subject.id);
+            } else {
+                setCreateError(result.error || "Failed to create subject");
             }
         } catch (error) {
             console.error("Failed to create subject", error);
+            setCreateError("An unexpected error occurred");
         } finally {
             setIsSubmitting(false);
         }
@@ -122,7 +135,7 @@ export function SubjectSelect({
                                 <span className="text-neutral-600">No subject (general study)</span>
                             </button>
 
-                            {subjects.map((subject) => (
+                            {allSubjects.map((subject) => (
                                 <button
                                     key={subject.id}
                                     type="button"
@@ -173,6 +186,10 @@ export function SubjectSelect({
                                 className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white"
                                 autoFocus
                             />
+
+                            {createError && (
+                                <div className="text-xs text-red-600 px-1">{createError}</div>
+                            )}
 
                             <div className="flex flex-wrap gap-2">
                                 {COLORS.map(color => (

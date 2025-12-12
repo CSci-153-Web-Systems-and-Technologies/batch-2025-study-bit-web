@@ -30,7 +30,7 @@ export function ReportFilters({ subjects }: ReportFiltersProps) {
         } else {
             params.set(key, value);
         }
-        router.push(`/reports?${params.toString()}`);
+        router.replace(`/reports?${params.toString()}`, { scroll: false });
     }, [router, searchParams]);
 
     const toggleSubject = useCallback((subjectId: string) => {
