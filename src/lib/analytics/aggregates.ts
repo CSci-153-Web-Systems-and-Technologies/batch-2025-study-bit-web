@@ -9,6 +9,7 @@ export interface DashboardMetrics {
     currentStreak: number;
     longestStreak: number;
     averageFocusScore: number | null;
+    averageHonestyScore: number | null;
     activeGoals: number;
     completedGoals: number;
     last7Days: { date: string; minutes: number }[];
@@ -52,6 +53,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
             currentStreak: 0,
             longestStreak: 0,
             averageFocusScore: null,
+            averageHonestyScore: null,
             activeGoals: 0,
             completedGoals: 0,
             last7Days: [],
@@ -68,7 +70,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     const [sessionsResult, streakResult, goalsResult] = await Promise.all([
         supabase
             .from("study_sessions")
-            .select("started_at, actual_duration_minutes, focus_score")
+            .select("started_at, actual_duration_minutes, focus_score, honesty_score")
             .eq("user_id", user.id)
             .eq("is_completed", true)
             .gte("started_at", monthStart.toISOString())
@@ -97,6 +99,8 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     let weekSessions = 0;
     let totalFocusScore = 0;
     let focusCount = 0;
+    let totalHonestyScore = 0;
+    let honestyCount = 0;
 
     const dailyMinutes: Record<string, number> = {};
 
@@ -132,6 +136,11 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
             totalFocusScore += session.focus_score;
             focusCount++;
         }
+
+        if (session.honesty_score !== null) {
+            totalHonestyScore += session.honesty_score;
+            honestyCount++;
+        }
     }
 
     const last7Days = Object.entries(dailyMinutes)
@@ -150,6 +159,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
         currentStreak: streak?.current_streak ?? 0,
         longestStreak: streak?.longest_streak ?? 0,
         averageFocusScore: focusCount > 0 ? Math.round(totalFocusScore / focusCount) : null,
+        averageHonestyScore: honestyCount > 0 ? Math.round(totalHonestyScore / honestyCount) : null,
         activeGoals,
         completedGoals,
         last7Days,
