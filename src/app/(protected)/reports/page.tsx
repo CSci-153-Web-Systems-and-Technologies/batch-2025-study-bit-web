@@ -1,8 +1,10 @@
 import { createServerClient } from "@/lib/supabase";
 import { getReportData } from "@/lib/reports/queries";
+import { getDateRange } from "@/lib/reports/utils";
 import { ReportFilters } from "@/components/ReportFilters";
+import { ReportCharts } from "@/components/ReportCharts";
 import { redirect } from "next/navigation";
-import { Clock, BookOpen, Target, ShieldCheck } from "lucide-react";
+import { Clock, BookOpen, Target, ShieldCheck, Download } from "lucide-react";
 
 export const metadata = {
     title: "Reports",
@@ -17,30 +19,14 @@ export default async function ReportsPage({
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) redirect("/sign-in");
 
-    const params = await searchParams;
-    const period = (typeof params.period === 'string' ? params.period : 'week') as 'week' | 'month' | 'year' | 'all';
-    const subjectParam = params.subject;
+    // Resolve params
+    const resolvedParams = await searchParams;
+    const period = typeof resolvedParams.period === 'string' ? resolvedParams.period : 'week';
+    const subjectParam = resolvedParams.subject;
     const subjectIds = Array.isArray(subjectParam) ? subjectParam : (subjectParam ? [subjectParam] : []);
 
-    const now = new Date();
-    let from = new Date();
-
-    // Set 'from' date based on period
-    // Simple logic: subtract days. 
-    // 'all' sets to epoch.
-    if (period === 'month') {
-        from.setDate(now.getDate() - 30);
-    } else if (period === 'year') {
-        from.setDate(now.getDate() - 365);
-    } else if (period === 'all') {
-        from = new Date(0); // 1970
-    } else {
-        from.setDate(now.getDate() - 7); // including today?
-    }
-
-    // For 'week', usually means last 7 days.
-
-    const reportData = await getReportData(user.id, from, now, subjectIds);
+    const { from, to } = getDateRange(period);
+    const reportData = await getReportData(user.id, from, to, subjectIds);
 
     const { data: subjects } = await supabase
         .from('subjects')
@@ -48,15 +34,29 @@ export default async function ReportsPage({
         .eq('user_id', user.id)
         .order('name');
 
-    // Calculate hours for display
     const totalHours = (reportData.totalMinutes / 60).toFixed(1);
+
+    // Construct export URL
+    const exportParams = new URLSearchParams();
+    if (period) exportParams.set("period", period);
+    subjectIds.forEach(id => exportParams.append("subject", id));
+    const exportUrl = `/api/reports/export?${exportParams.toString()}`;
 
     return (
         <div className="min-h-screen bg-neutral-50 p-4 sm:p-6 lg:p-8 space-y-6">
             <div className="max-w-6xl mx-auto space-y-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-neutral-900">Study Reports</h1>
-                    <p className="text-neutral-500">Analyze your focus and consistency.</p>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold text-neutral-900">Study Reports</h1>
+                        <p className="text-neutral-500">Analyze your focus and consistency.</p>
+                    </div>
+                    <a
+                        href={exportUrl}
+                        className="inline-flex items-center px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 shadow-sm transition-colors"
+                    >
+                        <Download className="w-4 h-4 mr-2" />
+                        Export CSV
+                    </a>
                 </div>
 
                 <ReportFilters subjects={subjects || []} />
@@ -104,10 +104,7 @@ export default async function ReportsPage({
                     </div>
                 </div>
 
-                {/* Debug / Data Check */}
-                {/* 
-                <pre className="text-xs">{JSON.stringify(reportData.timeline.slice(0, 5), null, 2)}</pre> 
-                */}
+                <ReportCharts timeline={reportData.timeline} subjects={reportData.subjects} />
             </div>
         </div>
     );

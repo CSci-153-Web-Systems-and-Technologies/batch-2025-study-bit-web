@@ -89,8 +89,12 @@ export async function getReportData(
 
         // Subject Distribution
         // Handle null subject or joined subject
-        const subjectName = session.subjects ? (Array.isArray(session.subjects) ? session.subjects[0]?.name : (session.subjects as any).name) : "Uncategorized";
-        const subjectColor = session.subjects ? (Array.isArray(session.subjects) ? session.subjects[0]?.color : (session.subjects as any).color) : "#94a3b8"; // slate-400
+        // Supabase returns object for single relation or array for multiple
+        const subj = session.subjects;
+        const subjObj = Array.isArray(subj) ? subj[0] : subj;
+
+        const subjectName = subjObj ? (subjObj as { name: string }).name : "Uncategorized";
+        const subjectColor = subjObj ? (subjObj as { color: string }).color : "#94a3b8"; // slate-400
 
         if (!subjectMap.has(subjectName)) {
             subjectMap.set(subjectName, { minutes: 0, color: subjectColor });
