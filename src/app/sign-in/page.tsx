@@ -40,27 +40,7 @@ export default function SignInPage() {
         router.refresh();
     }
 
-    async function handleSignInWithMagicLink() {
-        setIsLoading(true);
-        setError(null);
 
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
-            options: {
-                emailRedirectTo: `${window.location.origin}/auth/callback?redirectTo=${redirectTo}`,
-            },
-        });
-
-        if (error) {
-            setError(error.message);
-            setIsLoading(false);
-            return;
-        }
-
-        setError(null);
-        alert("Check your email for the magic link!");
-        setIsLoading(false);
-    }
 
     return (
         <div className="min-h-screen flex">
@@ -199,26 +179,6 @@ export default function SignInPage() {
                             )}
                         </Button>
                     </form>
-
-                    <div className="mt-6">
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-neutral-300" />
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white text-neutral-500">or</span>
-                            </div>
-                        </div>
-
-                        <button
-                            type="button"
-                            onClick={handleSignInWithMagicLink}
-                            disabled={isLoading || !email}
-                            className="mt-4 w-full py-3 px-4 border border-neutral-300 rounded-lg text-neutral-700 font-medium hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                            Send Magic Link
-                        </button>
-                    </div>
 
                     <p className="mt-8 text-center text-sm text-neutral-600">
                         Don&apos;t have an account?{" "}
