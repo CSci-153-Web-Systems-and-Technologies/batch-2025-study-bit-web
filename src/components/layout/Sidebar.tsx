@@ -16,6 +16,7 @@ import {
     Target,
     Menu,
     X,
+    Trophy,
 } from "lucide-react";
 
 const overviewLinks = [
@@ -23,6 +24,7 @@ const overviewLinks = [
     { href: "/sessions", label: "Study Timer", icon: Clock },
     { href: "/my-decks", label: "Study Log", icon: Library },
     { href: "/goals", label: "Goals", icon: Target },
+    { href: "/achievements", label: "Achievements", icon: Trophy },
     { href: "/progress", label: "Progress", icon: TrendingUp },
     { href: "/profile", label: "Profile", icon: User },
 ];

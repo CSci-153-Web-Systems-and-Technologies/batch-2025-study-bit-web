@@ -41,11 +41,11 @@ export function calculateStreak(
     // If neither, streak is 0.
 
     let currentStreak = 0;
-    let hasStudiedToday = sortedDates.includes(todayStr);
-    let hasStudiedYesterday = sortedDates.includes(yesterdayStr);
+    const hasStudiedToday = sortedDates.includes(todayStr);
+    const hasStudiedYesterday = sortedDates.includes(yesterdayStr);
 
     // Optimization: Pointer to current date being checked
-    let checkDate = new Date(referenceDate);
+    const checkDate = new Date(referenceDate);
 
     // If studied today or yesterday, calculate current streak
     if (hasStudiedToday || hasStudiedYesterday) {

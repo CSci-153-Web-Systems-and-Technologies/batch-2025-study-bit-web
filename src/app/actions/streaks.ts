@@ -3,6 +3,7 @@
 import { createServerClient } from "@/lib/supabase";
 import { calculateStreak } from "@/lib/streaks/calculateStreak";
 import { revalidatePath } from "next/cache";
+import { checkAchievements } from "@/app/actions/achievements";
 
 export async function recalculateStreak() {
     const supabase = await createServerClient();
@@ -38,13 +39,15 @@ export async function recalculateStreak() {
 
         if (upsertError) throw upsertError;
 
+        await checkAchievements();
+
         revalidatePath("/dashboard");
         revalidatePath("/achievements");
 
         return { success: true, streak: result };
 
-    } catch (error: any) {
+    } catch (error) {
         console.error("Failed to recalculate streak:", error);
-        return { success: false, error: error.message };
+        return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
     }
 }
