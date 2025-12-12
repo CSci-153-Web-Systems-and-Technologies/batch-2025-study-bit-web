@@ -14,9 +14,6 @@ interface HeaderProps {
 
 const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/sessions", label: "Sessions" },
-    { href: "/reports", label: "Reports" },
 ];
 
 export function Header({ user }: HeaderProps) {
