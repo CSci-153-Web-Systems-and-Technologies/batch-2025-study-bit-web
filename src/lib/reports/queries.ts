@@ -46,7 +46,10 @@ export async function getReportData(
         };
     }
 
-    // Aggregate Data
+    return aggregateReports(sessions);
+}
+
+export function aggregateReports(sessions: any[]): ReportData {
     let totalMinutes = 0;
     let totalFocus = 0;
     let totalHonesty = 0;
@@ -88,7 +91,6 @@ export async function getReportData(
         }
 
         // Subject Distribution
-        // Handle null subject or joined subject
         // Supabase returns object for single relation or array for multiple
         const subj = session.subjects;
         const subjObj = Array.isArray(subj) ? subj[0] : subj;
@@ -112,9 +114,6 @@ export async function getReportData(
             honesty: data.honestyCount > 0 ? Math.round(data.honestySum / data.honestyCount) : 0
         }))
         .sort((a, b) => a.date.localeCompare(b.date));
-
-    // Fill gaps? For now, we return valid data points. Charts can handle gaps or we can fill 0s.
-    // Let's fill 0s if we want a continuous line, but let's stick to simple first.
 
     // Formatting Subjects
     const subjects: SubjectDistribution[] = Array.from(subjectMap.entries())
