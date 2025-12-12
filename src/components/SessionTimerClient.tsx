@@ -6,6 +6,7 @@ import { SubjectSelect } from "@/components/SubjectSelect";
 import { TimerControls } from "@/components/TimerControls";
 import { TimerDisplay } from "@/components/TimerDisplay";
 import { DistractionWarning } from "@/components/DistractionWarning";
+import { HonestyModal } from "@/components/HonestyModal";
 import { useDistractionWatcher } from "@/hooks/useDistractionWatcher";
 import {
     timerReducer,
@@ -48,9 +49,7 @@ export function SessionTimerClient({
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showEndModal, setShowEndModal] = useState(false);
-    const [focusScore, setFocusScore] = useState(80);
-    const [honestyScore, setHonestyScore] = useState(80);
-    const [notes, setNotes] = useState("");
+
     const [isInitialized, setIsInitialized] = useState(false);
     const [showDistractionWarning, setShowDistractionWarning] = useState(false);
     const [distractionCount, setDistractionCount] = useState(0);
@@ -181,7 +180,7 @@ export function SessionTimerClient({
         setShowEndModal(true);
     }, []);
 
-    const handleEndSession = useCallback(async () => {
+    const handleEndSession = useCallback(async (data: { focusRating: number; isHonest: boolean; notes: string }) => {
         if (!state.sessionId) return;
 
         setIsLoading(true);
@@ -189,9 +188,9 @@ export function SessionTimerClient({
 
         const result = await endSession(
             state.sessionId,
-            focusScore,
-            honestyScore,
-            notes || undefined
+            data.focusRating,
+            data.isHonest,
+            data.notes
         );
 
         if (!result.success) {
@@ -203,12 +202,11 @@ export function SessionTimerClient({
         dispatch({ type: "RESET" });
         clearTimerState();
         setShowEndModal(false);
-        setFocusScore(80);
-        setHonestyScore(80);
-        setNotes("");
+
+        setDistractionCount(0);
         setIsLoading(false);
         router.refresh();
-    }, [state.sessionId, focusScore, honestyScore, notes, router]);
+    }, [state.sessionId, router]);
 
     const handleCancel = useCallback(async () => {
         if (!state.sessionId) return;
@@ -304,74 +302,11 @@ export function SessionTimerClient({
                 </div>
             </div>
 
-            {showEndModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl p-6 max-w-md w-full space-y-6">
-                        <h2 className="text-xl font-bold text-neutral-900">
-                            End Study Session
-                        </h2>
-
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                                    Focus Score: {focusScore}%
-                                </label>
-                                <input
-                                    type="range"
-                                    min="0"
-                                    max="100"
-                                    value={focusScore}
-                                    onChange={(e) => setFocusScore(Number(e.target.value))}
-                                    className="w-full accent-cyan-500"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                                    Honesty Score: {honestyScore}%
-                                </label>
-                                <input
-                                    type="range"
-                                    min="0"
-                                    max="100"
-                                    value={honestyScore}
-                                    onChange={(e) => setHonestyScore(Number(e.target.value))}
-                                    className="w-full accent-cyan-500"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                                    Notes (optional)
-                                </label>
-                                <textarea
-                                    value={notes}
-                                    onChange={(e) => setNotes(e.target.value)}
-                                    rows={3}
-                                    className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-neutral-900"
-                                    placeholder="What did you accomplish?"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => setShowEndModal(false)}
-                                className="flex-1 px-4 py-2 border border-neutral-300 rounded-lg text-neutral-700 hover:bg-neutral-50"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleEndSession}
-                                disabled={isLoading}
-                                className="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-600 hover:to-blue-700 disabled:opacity-50"
-                            >
-                                {isLoading ? "Saving..." : "Save Session"}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <HonestyModal
+                isOpen={showEndModal}
+                onComplete={handleEndSession}
+                distractionCount={distractionCount}
+            />
         </div>
     );
 }
