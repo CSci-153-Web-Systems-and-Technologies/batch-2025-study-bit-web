@@ -120,7 +120,7 @@ export function HonestyModal({ isOpen, onComplete, distractionCount }: HonestyMo
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             placeholder="What did you accomplish?"
-                            className="w-full h-20 px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none"
+                            className="w-full h-20 px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none text-neutral-900 bg-white"
                         />
                     </div>
 
