@@ -4,8 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Container } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { Timer, Menu, X } from "lucide-react";
+import { Timer, Menu, X, User } from "lucide-react";
 import { useState } from "react";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
+
+interface HeaderProps {
+    user: SupabaseUser | null;
+}
 
 const navLinks = [
     { href: "/", label: "Home" },
@@ -14,7 +19,7 @@ const navLinks = [
     { href: "/reports", label: "Reports" },
 ];
 
-export function Header() {
+export function Header({ user }: HeaderProps) {
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -49,18 +54,40 @@ export function Header() {
                     </ul>
 
                     <div className="hidden md:flex items-center gap-3">
-                        <Link
-                            href="/sign-in"
-                            className="text-sm text-neutral-400 hover:text-white transition-colors px-4 py-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
-                        >
-                            Sign In
-                        </Link>
-                        <Link
-                            href="/sign-in"
-                            className="text-sm font-medium bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all shadow-lg shadow-cyan-500/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
-                        >
-                            Get Started
-                        </Link>
+                        {user ? (
+                            <div className="flex items-center gap-4">
+                                <Link
+                                    href="/profile"
+                                    className="flex items-center gap-2 text-sm text-neutral-300 hover:text-white transition-colors"
+                                >
+                                    <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center border border-neutral-700">
+                                        <User className="w-4 h-4" />
+                                    </div>
+                                    <span>{user.email}</span>
+                                </Link>
+                                <a
+                                    href="/sign-out"
+                                    className="text-sm text-neutral-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-white/5"
+                                >
+                                    Sign Out
+                                </a>
+                            </div>
+                        ) : (
+                            <>
+                                <Link
+                                    href="/sign-in"
+                                    className="text-sm text-neutral-400 hover:text-white transition-colors px-4 py-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
+                                >
+                                    Sign In
+                                </Link>
+                                <Link
+                                    href="/sign-in"
+                                    className="text-sm font-medium bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all shadow-lg shadow-cyan-500/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
+                                >
+                                    Get Started
+                                </Link>
+                            </>
+                        )}
                     </div>
 
                     <button
@@ -96,20 +123,41 @@ export function Header() {
                             ))}
                         </ul>
                         <div className="mt-4 pt-4 border-t border-white/10 flex flex-col gap-2">
-                            <Link
-                                href="/sign-in"
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="text-sm text-neutral-400 hover:text-white transition-colors px-4 py-3 rounded-lg"
-                            >
-                                Sign In
-                            </Link>
-                            <Link
-                                href="/sign-in"
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="text-sm font-medium bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-3 rounded-lg text-center"
-                            >
-                                Get Started
-                            </Link>
+                            {user ? (
+                                <>
+                                    <Link
+                                        href="/profile"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="flex items-center gap-2 px-4 py-3 rounded-lg text-sm text-neutral-300 hover:text-white hover:bg-white/5"
+                                    >
+                                        <User className="w-4 h-4" />
+                                        <span>{user.email}</span>
+                                    </Link>
+                                    <a
+                                        href="/sign-out"
+                                        className="text-sm text-neutral-400 hover:text-white transition-colors px-4 py-3 rounded-lg hover:bg-white/5"
+                                    >
+                                        Sign Out
+                                    </a>
+                                </>
+                            ) : (
+                                <>
+                                    <Link
+                                        href="/sign-in"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="text-sm text-neutral-400 hover:text-white transition-colors px-4 py-3 rounded-lg"
+                                    >
+                                        Sign In
+                                    </Link>
+                                    <Link
+                                        href="/sign-in"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="text-sm font-medium bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-3 rounded-lg text-center"
+                                    >
+                                        Get Started
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 )}
