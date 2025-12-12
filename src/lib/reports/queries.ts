@@ -46,10 +46,18 @@ export async function getReportData(
         };
     }
 
-    return aggregateReports(sessions);
+    return aggregateReports(sessions as unknown as SessionInput[]);
 }
 
-export function aggregateReports(sessions: any[]): ReportData {
+interface SessionInput {
+    actual_duration_minutes: number | null;
+    focus_score: number | null;
+    honesty_score: number | null;
+    started_at: string;
+    subjects: { name: string; color: string } | { name: string; color: string }[] | null;
+}
+
+export function aggregateReports(sessions: SessionInput[]): ReportData {
     let totalMinutes = 0;
     let totalFocus = 0;
     let totalHonesty = 0;
