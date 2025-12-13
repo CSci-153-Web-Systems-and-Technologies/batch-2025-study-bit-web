@@ -1,6 +1,6 @@
 import { createServerClient } from "@/lib/supabase";
 import { getProfile, getStreak } from "@/lib/db/profile";
-
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import { User, Mail, Clock, Flame, Calendar, Award } from "lucide-react";
 import { ProfileForm } from "@/components/ProfileForm";
@@ -12,7 +12,10 @@ export const metadata = {
 export default async function ProfilePage() {
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
-    const userId = user!.id;
+
+    if (!user) {
+        redirect("/sign-in");
+    }
 
     const [profile, streak] = await Promise.all([
         getProfile(),
@@ -22,7 +25,7 @@ export default async function ProfilePage() {
     const { data: stats } = await supabase
         .from("study_sessions")
         .select("actual_duration_minutes")
-        .eq("user_id", userId)
+        .eq("user_id", user.id)
         .eq("is_completed", true);
 
     const totalMinutes = stats?.reduce((sum, s) => sum + (s.actual_duration_minutes || 0), 0) || 0;
