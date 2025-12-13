@@ -1,6 +1,6 @@
 "use server";
 
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { Database } from "@/types/supabase";
 
@@ -13,7 +13,7 @@ export async function createGoal(formData: {
     subjectId?: string;
     deadline?: string;
 }): Promise<{ success: boolean; goal?: Goal; error?: string }> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -64,7 +64,7 @@ export async function updateGoal(
         deadline?: string | null;
     }
 ): Promise<{ success: boolean; goal?: Goal; error?: string }> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -101,7 +101,7 @@ export async function updateGoal(
 export async function deleteGoal(
     goalId: string
 ): Promise<{ success: boolean; error?: string }> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -125,7 +125,7 @@ export async function deleteGoal(
 }
 
 export async function getGoalsWithProgress(): Promise<Goal[]> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();

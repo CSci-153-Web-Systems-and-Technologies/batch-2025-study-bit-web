@@ -1,6 +1,6 @@
 "use server";
 
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { Database } from "@/types/supabase";
 
@@ -12,7 +12,7 @@ export async function recordDistraction(
     durationSeconds?: number,
     notes?: string
 ): Promise<{ success: boolean; error?: string }> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -52,7 +52,7 @@ export async function recordDistraction(
 export async function getSessionDistractions(
     sessionId: string
 ): Promise<Database["public"]["Tables"]["distraction_events"]["Row"][]> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();

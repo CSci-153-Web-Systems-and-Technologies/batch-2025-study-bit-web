@@ -1,6 +1,6 @@
 "use server";
 
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 export async function updateProfile(formData: {
@@ -8,7 +8,7 @@ export async function updateProfile(formData: {
     dailyGoalMinutes?: number;
     penaltyMode?: "none" | "pause_timer" | "streak_debit";
 }): Promise<{ success: boolean; error?: string }> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();

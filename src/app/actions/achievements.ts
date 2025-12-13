@@ -1,12 +1,12 @@
 "use server";
 
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { ACHIEVEMENT_RULES } from "@/lib/achievements/rules";
 import { UserStats } from "@/lib/achievements/types";
 import { revalidatePath } from "next/cache";
 
 export async function checkAchievements() {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return { success: false, error: "Not authenticated" };
@@ -87,7 +87,7 @@ export async function checkAchievements() {
 }
 
 export async function getAchievements() {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return [];
 

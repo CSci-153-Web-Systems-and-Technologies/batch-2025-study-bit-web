@@ -1,13 +1,13 @@
 "use server";
 
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { Database } from "@/types/supabase";
 
 type StudySession = Database["public"]["Tables"]["study_sessions"]["Row"];
 
 export async function getActiveSession(): Promise<StudySession | null> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -35,7 +35,7 @@ export async function startSession(
     subjectId?: string,
     plannedDurationMinutes?: number
 ): Promise<{ success: boolean; session?: StudySession; error?: string }> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -82,7 +82,7 @@ export async function endSession(
     honestyDeclared: boolean,
     notes?: string
 ): Promise<{ success: boolean; session?: StudySession; error?: string }> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -164,7 +164,7 @@ export async function endSession(
 export async function cancelSession(
     sessionId: string
 ): Promise<{ success: boolean; error?: string }> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -191,7 +191,7 @@ export async function cancelSession(
 export async function getRecentSessions(
     limit: number = 10
 ): Promise<StudySession[]> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();

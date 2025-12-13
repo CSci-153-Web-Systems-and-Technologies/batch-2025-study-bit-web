@@ -1,9 +1,9 @@
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
     const requestUrl = new URL(request.url);
-    const supabase = await createServerClient();
+    const supabase = await createClient();
 
     await supabase.auth.signOut();
 

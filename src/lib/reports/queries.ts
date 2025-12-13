@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { ReportData, ChartDataPoint, SubjectDistribution } from "./types";
 
 export async function getReportData(
@@ -7,7 +7,7 @@ export async function getReportData(
     to: Date,
     subjectIds?: string[]
 ): Promise<ReportData> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
 
     let query = supabase
         .from("study_sessions")

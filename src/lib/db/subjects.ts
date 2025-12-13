@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/supabase";
 
 type Subject = Database["public"]["Tables"]["subjects"]["Row"];
@@ -6,7 +6,7 @@ type SubjectInsert = Database["public"]["Tables"]["subjects"]["Insert"];
 type SubjectUpdate = Database["public"]["Tables"]["subjects"]["Update"];
 
 export async function getSubjects(): Promise<Subject[]> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from("subjects")
         .select("*")
@@ -18,7 +18,7 @@ export async function getSubjects(): Promise<Subject[]> {
 }
 
 export async function getSubjectById(id: string): Promise<Subject | null> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from("subjects")
         .select("*")
@@ -33,7 +33,7 @@ export async function getSubjectById(id: string): Promise<Subject | null> {
 }
 
 export async function createSubject(subject: Omit<SubjectInsert, "user_id">): Promise<Subject> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) throw new Error("Not authenticated");
@@ -49,7 +49,7 @@ export async function createSubject(subject: Omit<SubjectInsert, "user_id">): Pr
 }
 
 export async function updateSubject(id: string, updates: SubjectUpdate): Promise<Subject> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from("subjects")
         .update(updates)
@@ -62,7 +62,7 @@ export async function updateSubject(id: string, updates: SubjectUpdate): Promise
 }
 
 export async function archiveSubject(id: string): Promise<void> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { error } = await supabase
         .from("subjects")
         .update({ is_archived: true })
@@ -72,7 +72,7 @@ export async function archiveSubject(id: string): Promise<void> {
 }
 
 export async function deleteSubject(id: string): Promise<void> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { error } = await supabase
         .from("subjects")
         .delete()

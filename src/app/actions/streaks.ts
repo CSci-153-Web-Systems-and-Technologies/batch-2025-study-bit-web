@@ -1,12 +1,12 @@
 "use server";
 
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { calculateStreak } from "@/lib/streaks/calculateStreak";
 import { revalidatePath } from "next/cache";
 import { checkAchievements } from "@/app/actions/achievements";
 
 export async function recalculateStreak() {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return { success: false, error: "Not authenticated" };

@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/supabase";
 
 type Goal = Database["public"]["Tables"]["goals"]["Row"];
@@ -6,7 +6,7 @@ type GoalInsert = Database["public"]["Tables"]["goals"]["Insert"];
 type GoalUpdate = Database["public"]["Tables"]["goals"]["Update"];
 
 export async function getActiveGoals(): Promise<Goal[]> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from("goals")
         .select("*")
@@ -18,7 +18,7 @@ export async function getActiveGoals(): Promise<Goal[]> {
 }
 
 export async function getAllGoals(): Promise<Goal[]> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from("goals")
         .select("*")
@@ -29,7 +29,7 @@ export async function getAllGoals(): Promise<Goal[]> {
 }
 
 export async function getGoalById(id: string): Promise<Goal | null> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from("goals")
         .select("*")
@@ -44,7 +44,7 @@ export async function getGoalById(id: string): Promise<Goal | null> {
 }
 
 export async function createGoal(goal: Omit<GoalInsert, "user_id">): Promise<Goal> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) throw new Error("Not authenticated");
@@ -60,7 +60,7 @@ export async function createGoal(goal: Omit<GoalInsert, "user_id">): Promise<Goa
 }
 
 export async function updateGoal(id: string, updates: GoalUpdate): Promise<Goal> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from("goals")
         .update(updates)
@@ -73,7 +73,7 @@ export async function updateGoal(id: string, updates: GoalUpdate): Promise<Goal>
 }
 
 export async function updateGoalProgress(id: string, additionalMinutes: number): Promise<Goal> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
 
     const goal = await getGoalById(id);
     if (!goal) throw new Error("Goal not found");
@@ -104,7 +104,7 @@ export async function abandonGoal(id: string): Promise<Goal> {
 }
 
 export async function deleteGoal(id: string): Promise<void> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { error } = await supabase
         .from("goals")
         .delete()

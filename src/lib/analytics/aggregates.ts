@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 
 export interface DashboardMetrics {
     todayMinutes: number;
@@ -38,7 +38,7 @@ function getStartOfMonth(date: Date): Date {
 }
 
 export async function getDashboardMetrics(): Promise<DashboardMetrics> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();

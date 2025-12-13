@@ -1,6 +1,6 @@
 "use server";
 
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 interface UpdateProfileData {
@@ -13,7 +13,7 @@ interface UpdateProfileData {
 }
 
 export async function updateProfile(data: UpdateProfileData) {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {

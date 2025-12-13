@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/supabase";
 
 type StudySession = Database["public"]["Tables"]["study_sessions"]["Row"];
@@ -6,7 +6,7 @@ type StudySessionInsert = Database["public"]["Tables"]["study_sessions"]["Insert
 type StudySessionUpdate = Database["public"]["Tables"]["study_sessions"]["Update"];
 
 export async function getSessions(limit = 50): Promise<StudySession[]> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from("study_sessions")
         .select("*")
@@ -21,7 +21,7 @@ export async function getSessionsByDateRange(
     startDate: string,
     endDate: string
 ): Promise<StudySession[]> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from("study_sessions")
         .select("*")
@@ -34,7 +34,7 @@ export async function getSessionsByDateRange(
 }
 
 export async function getSessionById(id: string): Promise<StudySession | null> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from("study_sessions")
         .select("*")
@@ -51,7 +51,7 @@ export async function getSessionById(id: string): Promise<StudySession | null> {
 export async function createSession(
     session: Omit<StudySessionInsert, "user_id">
 ): Promise<StudySession> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) throw new Error("Not authenticated");
@@ -70,7 +70,7 @@ export async function updateSession(
     id: string,
     updates: StudySessionUpdate
 ): Promise<StudySession> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from("study_sessions")
         .update(updates)
@@ -87,7 +87,7 @@ export async function completeSession(
     focusScore: number,
     honestyScore: number
 ): Promise<StudySession> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from("study_sessions")
         .update({
@@ -105,7 +105,7 @@ export async function completeSession(
 }
 
 export async function deleteSession(id: string): Promise<void> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { error } = await supabase
         .from("study_sessions")
         .delete()
@@ -115,7 +115,7 @@ export async function deleteSession(id: string): Promise<void> {
 }
 
 export async function getTodaysTotalMinutes(): Promise<number> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 

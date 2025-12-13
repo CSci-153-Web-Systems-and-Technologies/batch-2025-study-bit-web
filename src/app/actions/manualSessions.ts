@@ -1,6 +1,6 @@
 "use server";
 
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { recalculateStreak } from "@/app/actions/streaks";
 import type { Database } from "@/types/supabase";
@@ -14,7 +14,7 @@ export async function createManualSession(formData: {
     notes?: string;
     focusScore?: number;
 }): Promise<{ success: boolean; session?: StudySession; error?: string }> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -70,7 +70,7 @@ export async function updateSession(
         focusScore?: number;
     }
 ): Promise<{ success: boolean; session?: StudySession; error?: string }> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -115,7 +115,7 @@ export async function updateSession(
 export async function deleteSession(
     sessionId: string
 ): Promise<{ success: boolean; error?: string }> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -145,7 +145,7 @@ export async function getSessionsWithSubjects(
 ): Promise<
     Array<StudySession & { subjects: { name: string; color: string } | null }>
 > {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();

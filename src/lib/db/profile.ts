@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/supabase";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
@@ -6,7 +6,7 @@ type ProfileUpdate = Database["public"]["Tables"]["profiles"]["Update"];
 type Streak = Database["public"]["Tables"]["streaks"]["Row"];
 
 export async function getProfile(): Promise<Profile | null> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return null;
@@ -25,7 +25,7 @@ export async function getProfile(): Promise<Profile | null> {
 }
 
 export async function updateProfile(updates: ProfileUpdate): Promise<Profile> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) throw new Error("Not authenticated");
@@ -42,7 +42,7 @@ export async function updateProfile(updates: ProfileUpdate): Promise<Profile> {
 }
 
 export async function getStreak(): Promise<Streak | null> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return null;
@@ -61,7 +61,7 @@ export async function getStreak(): Promise<Streak | null> {
 }
 
 export async function updateStreak(): Promise<Streak> {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) throw new Error("Not authenticated");
