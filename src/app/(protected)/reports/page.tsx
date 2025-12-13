@@ -3,7 +3,6 @@ import { getReportData } from "@/lib/reports/queries";
 import { getDateRange } from "@/lib/reports/utils";
 import { ReportFilters } from "@/components/ReportFilters";
 import { ReportCharts } from "@/components/ReportCharts";
-import { notFound } from "next/navigation";
 import { Clock, BookOpen, Target, ShieldCheck, Download } from "lucide-react";
 
 export const metadata = {
@@ -17,7 +16,7 @@ export default async function ReportsPage({
 }) {
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) notFound();
+    const userId = user!.id;
 
     // Resolve params
     const resolvedParams = await searchParams;
@@ -26,12 +25,12 @@ export default async function ReportsPage({
     const subjectIds = Array.isArray(subjectParam) ? subjectParam : (subjectParam ? [subjectParam] : []);
 
     const { from, to } = getDateRange(period);
-    const reportData = await getReportData(user.id, from, to, subjectIds);
+    const reportData = await getReportData(userId, from, to, subjectIds);
 
     const { data: subjects } = await supabase
         .from('subjects')
         .select('id, name')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .order('name');
 
     const totalHours = (reportData.totalMinutes / 60).toFixed(1);

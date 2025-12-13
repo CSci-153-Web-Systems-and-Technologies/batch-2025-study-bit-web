@@ -1,6 +1,6 @@
 import { createServerClient } from "@/lib/supabase";
 import { getProfile, getStreak } from "@/lib/db/profile";
-import { notFound } from "next/navigation";
+
 import Image from "next/image";
 import { User, Mail, Clock, Flame, Calendar, Award } from "lucide-react";
 import { ProfileForm } from "@/components/ProfileForm";
@@ -12,8 +12,7 @@ export const metadata = {
 export default async function ProfilePage() {
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) notFound();
+    const userId = user!.id;
 
     const [profile, streak] = await Promise.all([
         getProfile(),
@@ -23,7 +22,7 @@ export default async function ProfilePage() {
     const { data: stats } = await supabase
         .from("study_sessions")
         .select("actual_duration_minutes")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("is_completed", true);
 
     const totalMinutes = stats?.reduce((sum, s) => sum + (s.actual_duration_minutes || 0), 0) || 0;
@@ -76,7 +75,7 @@ export default async function ProfilePage() {
                                 </h2>
                                 <div className="flex items-center gap-2 text-neutral-500 text-sm">
                                     <Mail className="w-4 h-4" />
-                                    {user.email}
+                                    {user!.email}
                                 </div>
                             </div>
                         </div>
@@ -129,7 +128,7 @@ export default async function ProfilePage() {
                 {/* Profile Form */}
                 <ProfileForm
                     profile={profile}
-                    email={user.email || ""}
+                    email={user!.email || ""}
                 />
             </div>
         </div>
