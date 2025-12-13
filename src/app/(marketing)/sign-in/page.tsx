@@ -36,8 +36,7 @@ export default function SignInPage() {
             return;
         }
 
-        router.push(redirectTo);
-        router.refresh();
+        window.location.href = redirectTo;
     }
 
 
