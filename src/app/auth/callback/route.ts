@@ -24,7 +24,7 @@ export async function GET(request: Request) {
                                 ...options,
                                 path: "/",
                                 sameSite: "lax",
-                                secure: process.env.NODE_ENV === "production",
+                                secure: process.env.VERCEL === "1" || process.env.NODE_ENV === "production",
                                 httpOnly: true,
                             })
                         );
