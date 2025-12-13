@@ -2,8 +2,10 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
-    let supabaseResponse = NextResponse.next({
-        request,
+    const response = NextResponse.next({
+        request: {
+            headers: request.headers,
+        },
     });
 
     const supabase = createServerClient(
@@ -15,21 +17,15 @@ export async function updateSession(request: NextRequest) {
                     return request.cookies.getAll();
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value }) =>
-                        request.cookies.set(name, value)
-                    );
-                    supabaseResponse = NextResponse.next({
-                        request,
+                    cookiesToSet.forEach(({ name, value, options }) => {
+                        request.cookies.set(name, value);
+                        response.cookies.set(name, value, options);
                     });
-                    cookiesToSet.forEach(({ name, value, options }) =>
-                        supabaseResponse.cookies.set(name, value, options)
-                    );
                 },
             },
         }
     );
 
-    // Refresh session if expired - required for Server Components
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -58,7 +54,6 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
-    // Redirect authenticated users away from auth pages
     const authPaths = ["/sign-in", "/sign-up"];
     const isAuthPath = authPaths.some((path) =>
         request.nextUrl.pathname.startsWith(path)
@@ -70,5 +65,6 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
-    return supabaseResponse;
+    return response;
 }
+
