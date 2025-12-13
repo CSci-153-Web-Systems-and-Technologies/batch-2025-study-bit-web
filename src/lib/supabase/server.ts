@@ -4,13 +4,17 @@ import { cookies } from "next/headers";
 export async function createClient() {
     const cookieStore = await cookies();
 
-    return createServerClient(
+    const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
             cookies: {
                 getAll() {
-                    return cookieStore.getAll();
+                    const allHelpers = cookieStore.getAll();
+                    // Log cookies for debugging (filtering out sensitive values if needed in prod, but helpful here)
+                    console.log('[Server] Cookies present:', allHelpers.map(c => c.name));
+                    console.log('[Server] Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+                    return allHelpers;
                 },
                 setAll(cookiesToSet) {
                     try {
@@ -21,10 +25,11 @@ export async function createClient() {
                         });
                     } catch {
                         // The `setAll` method was called from a Server Component.
-                        // This can be ignored if you have middleware refreshing user sessions.
                     }
                 },
             },
         }
     );
+
+    return supabase;
 }
