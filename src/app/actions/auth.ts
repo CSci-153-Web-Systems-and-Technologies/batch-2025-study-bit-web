@@ -21,13 +21,7 @@ export async function signIn(formData: FormData) {
                 },
                 setAll(cookiesToSet) {
                     cookiesToSet.forEach(({ name, value, options }) => {
-                        cookieStore.set(name, value, {
-                            ...options,
-                            path: "/",
-                            sameSite: "lax",
-                            secure: process.env.VERCEL === "1" || process.env.NODE_ENV === "production",
-                            httpOnly: true,
-                        });
+                        cookieStore.set(name, value, options);
                     });
                 },
             },
@@ -62,13 +56,7 @@ export async function signUp(formData: FormData) {
                 },
                 setAll(cookiesToSet) {
                     cookiesToSet.forEach(({ name, value, options }) =>
-                        cookieStore.set(name, value, {
-                            ...options,
-                            path: "/",
-                            sameSite: "lax",
-                            secure: process.env.VERCEL === "1" || process.env.NODE_ENV === "production",
-                            httpOnly: true,
-                        })
+                        cookieStore.set(name, value, options)
                     );
                 },
             },
