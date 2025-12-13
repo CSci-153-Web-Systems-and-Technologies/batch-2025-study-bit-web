@@ -27,10 +27,15 @@ export function HonestyModal({ isOpen, onComplete, distractionCount }: HonestyMo
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="honesty-modal-title"
+        >
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 <div className="bg-gradient-to-r from-cyan-500 to-blue-600 p-6 text-white text-center">
-                    <h2 className="text-2xl font-bold mb-2">Session Complete!</h2>
+                    <h2 id="honesty-modal-title" className="text-2xl font-bold mb-2">Session Complete!</h2>
                     <p className="text-cyan-100">Time to reflect on your study session.</p>
                 </div>
 
@@ -40,13 +45,15 @@ export function HonestyModal({ isOpen, onComplete, distractionCount }: HonestyMo
                         <label className="block text-sm font-medium text-neutral-700">
                             How focused were you?
                         </label>
-                        <div className="flex justify-center gap-2">
+                        <div className="flex justify-center gap-2" role="group" aria-label="Focus rating">
                             {[1, 2, 3, 4, 5].map((rating) => (
                                 <button
                                     key={rating}
                                     type="button"
                                     onClick={() => setFocusRating(rating)}
-                                    className="p-1 focus:outline-none transition-transform hover:scale-110"
+                                    aria-label={`Rate focus ${rating} out of 5 stars`}
+                                    aria-pressed={rating <= focusRating}
+                                    className="p-1 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 transition-transform hover:scale-110"
                                 >
                                     <Star
                                         className={cn(
