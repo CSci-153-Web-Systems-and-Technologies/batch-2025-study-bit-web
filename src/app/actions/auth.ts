@@ -11,6 +11,11 @@ export async function signIn(formData: FormData) {
     const password = formData.get("password") as string;
     const redirectTo = (formData.get("redirectTo") as string) || "/dashboard";
 
+    console.log("[signIn] Starting sign-in for:", email);
+    console.log("[signIn] isProduction:", isProduction);
+    console.log("[signIn] VERCEL env:", process.env.VERCEL);
+    console.log("[signIn] NODE_ENV:", process.env.NODE_ENV);
+
     const cookieStore = await cookies();
 
     const supabase = createServerClient(
@@ -19,10 +24,14 @@ export async function signIn(formData: FormData) {
         {
             cookies: {
                 getAll() {
-                    return cookieStore.getAll();
+                    const all = cookieStore.getAll();
+                    console.log("[signIn] getAll called, cookies:", all.map(c => c.name));
+                    return all;
                 },
                 setAll(cookiesToSet) {
+                    console.log("[signIn] setAll called with cookies:", cookiesToSet.map(c => ({ name: c.name, hasValue: !!c.value })));
                     cookiesToSet.forEach(({ name, value, options }) => {
+                        console.log("[signIn] Setting cookie:", name, "secure:", isProduction);
                         cookieStore.set(name, value, {
                             ...options,
                             path: "/",
@@ -36,15 +45,18 @@ export async function signIn(formData: FormData) {
         }
     );
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
     });
+
+    console.log("[signIn] Auth result - User:", data?.user?.email || "null", "Error:", error?.message || "none");
 
     if (error) {
         return { error: error.message };
     }
 
+    console.log("[signIn] Success! Redirecting to:", redirectTo);
     redirect(redirectTo);
 }
 
