@@ -33,12 +33,16 @@ interface SessionTimerClientProps {
     subjects: Subject[];
     initialActiveSession: Database["public"]["Tables"]["study_sessions"]["Row"] | null;
     penaltyMode?: "none" | "pause_timer" | "streak_debit" | null;
+    dailyGoalMinutes?: number;
+    currentStreak?: number;
 }
 
 export function SessionTimerClient({
     subjects,
     initialActiveSession,
     penaltyMode = "pause_timer",
+    dailyGoalMinutes = 120,
+    currentStreak = 0,
 }: SessionTimerClientProps) {
     const router = useRouter();
     const [state, dispatch] = useReducer(timerReducer, initialTimerState);
@@ -290,7 +294,9 @@ export function SessionTimerClient({
                         <Target className="w-5 h-5 text-green-500" />
                         <span className="text-sm text-neutral-500">Daily Goal</span>
                     </div>
-                    <div className="text-2xl font-bold text-neutral-900">2h 0m</div>
+                    <div className="text-2xl font-bold text-neutral-900">
+                        {Math.floor(dailyGoalMinutes / 60)}h {dailyGoalMinutes % 60}m
+                    </div>
                 </div>
 
                 <div className="bg-white rounded-xl p-6 border border-neutral-100">
@@ -298,7 +304,7 @@ export function SessionTimerClient({
                         <TrendingUp className="w-5 h-5 text-amber-500" />
                         <span className="text-sm text-neutral-500">Current Streak</span>
                     </div>
-                    <div className="text-2xl font-bold text-neutral-900">0 days</div>
+                    <div className="text-2xl font-bold text-neutral-900">{currentStreak} days</div>
                 </div>
             </div>
 
