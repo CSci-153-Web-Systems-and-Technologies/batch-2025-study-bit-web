@@ -12,8 +12,13 @@ export function createClient() {
         throw new Error("Missing Supabase environment variables");
     }
 
-    client = createBrowserClient(supabaseUrl, supabaseKey);
+    client = createBrowserClient(supabaseUrl, supabaseKey, {
+        cookieOptions: {
+            path: "/",
+            sameSite: "lax",
+            secure: window.location.protocol === "https:",
+        },
+    });
 
     return client;
 }
-
