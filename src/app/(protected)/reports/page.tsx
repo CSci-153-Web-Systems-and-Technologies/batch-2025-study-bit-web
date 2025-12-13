@@ -17,7 +17,10 @@ export default async function ReportsPage({
 }) {
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) redirect("/sign-in");
+
+    if (!user) {
+        redirect("/sign-in");
+    }
 
     // Resolve params
     const resolvedParams = await searchParams;
