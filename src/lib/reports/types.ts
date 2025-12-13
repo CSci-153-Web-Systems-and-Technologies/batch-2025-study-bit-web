@@ -14,6 +14,7 @@ export interface ChartDataPoint {
 }
 
 export interface SubjectDistribution {
+    [key: string]: string | number;
     name: string;
     color: string;
     minutes: number;
