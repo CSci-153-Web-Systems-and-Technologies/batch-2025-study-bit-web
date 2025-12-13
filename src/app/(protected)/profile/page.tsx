@@ -1,6 +1,6 @@
 import { createServerClient } from "@/lib/supabase";
 import { getProfile, getStreak } from "@/lib/db/profile";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import { User, Mail, Clock, Flame, Calendar, Award } from "lucide-react";
 import { ProfileForm } from "@/components/ProfileForm";
@@ -13,7 +13,7 @@ export default async function ProfilePage() {
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) redirect("/sign-in");
+    if (!user) notFound();
 
     const [profile, streak] = await Promise.all([
         getProfile(),

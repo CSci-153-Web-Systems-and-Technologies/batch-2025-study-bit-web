@@ -3,7 +3,7 @@ import { getReportData } from "@/lib/reports/queries";
 import { getDateRange } from "@/lib/reports/utils";
 import { ReportFilters } from "@/components/ReportFilters";
 import { ReportCharts } from "@/components/ReportCharts";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Clock, BookOpen, Target, ShieldCheck, Download } from "lucide-react";
 
 export const metadata = {
@@ -17,7 +17,7 @@ export default async function ReportsPage({
 }) {
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) redirect("/sign-in");
+    if (!user) notFound();
 
     // Resolve params
     const resolvedParams = await searchParams;
