@@ -13,12 +13,16 @@ export async function updateSession(request: NextRequest) {
         return supabaseResponse;
     }
 
+    console.log("[Proxy] Request path:", request.nextUrl.pathname);
+    console.log("[Proxy] Cookies received:", request.cookies.getAll().map(c => c.name));
+
     const supabase = createServerClient(supabaseUrl, supabaseKey, {
         cookies: {
             getAll() {
                 return request.cookies.getAll();
             },
             setAll(cookiesToSet) {
+                console.log("[Proxy] Setting cookies:", cookiesToSet.map(c => c.name));
                 cookiesToSet.forEach(({ name, value }) =>
                     request.cookies.set(name, value)
                 );
@@ -32,7 +36,8 @@ export async function updateSession(request: NextRequest) {
         },
     });
 
-    await supabase.auth.getUser();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    console.log("[Proxy] User after getUser:", user?.email || "null", "Error:", error?.message || "none");
 
     return supabaseResponse;
 }
