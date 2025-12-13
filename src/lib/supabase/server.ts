@@ -8,8 +8,13 @@ export async function createClient() {
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
+        console.error("[Server] Missing Supabase environment variables");
         throw new Error("Missing Supabase environment variables");
     }
+
+    const allCookies = cookieStore.getAll();
+    console.log("[Server] createClient - Cookies found:", allCookies.map(c => c.name));
+    console.log("[Server] createClient - Supabase URL:", supabaseUrl);
 
     return createServerClient(supabaseUrl, supabaseKey, {
         cookies: {
@@ -29,4 +34,5 @@ export async function createClient() {
         },
     });
 }
+
 
