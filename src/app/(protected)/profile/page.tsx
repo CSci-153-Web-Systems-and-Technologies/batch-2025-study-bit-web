@@ -13,7 +13,9 @@ export default async function ProfilePage() {
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) redirect("/sign-in");
+    if (!user) {
+        redirect("/sign-in");
+    }
 
     const [profile, streak] = await Promise.all([
         getProfile(),
@@ -76,7 +78,7 @@ export default async function ProfilePage() {
                                 </h2>
                                 <div className="flex items-center gap-2 text-neutral-500 text-sm">
                                     <Mail className="w-4 h-4" />
-                                    {user.email}
+                                    {user!.email}
                                 </div>
                             </div>
                         </div>
@@ -129,7 +131,7 @@ export default async function ProfilePage() {
                 {/* Profile Form */}
                 <ProfileForm
                     profile={profile}
-                    email={user.email || ""}
+                    email={user!.email || ""}
                 />
             </div>
         </div>
