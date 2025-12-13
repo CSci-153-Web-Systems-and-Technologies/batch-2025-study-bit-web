@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "@/app/actions/auth";
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 
@@ -11,23 +11,31 @@ export default function SignInPage() {
     const searchParams = useSearchParams();
     const redirectTo = searchParams.get("redirectTo") || "/dashboard";
 
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    async function handleSignIn(formData: FormData) {
+    const supabase = createClient();
+
+    async function handleSignIn(e: React.FormEvent) {
+        e.preventDefault();
         setIsLoading(true);
         setError(null);
 
-        formData.append("redirectTo", redirectTo);
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
 
-        const result = await signIn(formData);
-
-        if (result?.error) {
-            setError(result.error);
+        if (error) {
+            setError(error.message);
             setIsLoading(false);
+            return;
         }
-        // If successful, server action redirects automatically
+
+        window.location.href = redirectTo;
     }
 
     return (
@@ -102,7 +110,7 @@ export default function SignInPage() {
                         <p className="text-neutral-600">Get started absolutely free</p>
                     </div>
 
-                    <form action={handleSignIn} className="space-y-4">
+                    <form onSubmit={handleSignIn} className="space-y-4">
                         {error && (
                             <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
                                 {error}
@@ -117,8 +125,9 @@ export default function SignInPage() {
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
                                 <input
                                     id="email"
-                                    name="email"
                                     type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-neutral-900"
                                     placeholder="Enter your email"
                                     required
@@ -134,8 +143,9 @@ export default function SignInPage() {
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
                                 <input
                                     id="password"
-                                    name="password"
                                     type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     className="w-full pl-10 pr-12 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-neutral-900"
                                     placeholder="Enter your password"
                                     required
