@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# StudyBit 📚
+
+A modern study tracking application designed to help students build consistent study habits through focused sessions, honest self-reflection, and progress analytics.
+
+## Features
+
+### Core Functionality
+- **Study Timer** - Pomodoro-style timer with distraction detection and honesty system
+- **Session Logging** - Manual session entry with subject tagging
+- **Dashboard** - Overview of daily progress, goals, and recent activity
+- **Reports & Analytics** - Visual charts, filters, and CSV export
+
+### Gamification & Motivation
+- **Streaks** - Track consecutive study days
+- **Achievements** - Unlock badges for milestones
+- **Honesty System** - Self-reflection prompts to build awareness
+
+### User Experience
+- **Profile Management** - Customize daily goals, session preferences, and timezone
+- **Subject Management** - Create and organize study subjects with colors
+- **Responsive Design** - Works on desktop and mobile
+- **Accessibility** - ARIA labels, focus states, keyboard navigation
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Styling**: Tailwind CSS
+- **Database**: Supabase (PostgreSQL + Auth)
+- **Charts**: Recharts
+- **Testing**: Vitest (unit), Playwright (E2E)
+- **Language**: TypeScript
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js 18+
+- npm or pnpm
+- Supabase account
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Environment Variables
+
+Create a `.env.local` file:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Install dependencies
+npm install
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Run development server
+npm run dev
 
-## Learn More
+# Run unit tests
+npm run test
 
-To learn more about Next.js, take a look at the following resources:
+# Run E2E tests
+npm run test:e2e
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Lint code
+npm run lint
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Build for production
+npm run build
+```
 
-## Deploy on Vercel
+### Database Setup
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Run the migrations in `supabase/migrations/` in order:
+1. `20251213_data_model.sql` - Core tables
+2. `20251213_add_honesty_system.sql` - Honesty columns
+3. `20251213_add_penalty_mode.sql` - Penalty mode setting
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── (protected)/        # Auth-required routes
+│   │   ├── dashboard/      # Main dashboard
+│   │   ├── sessions/       # Study timer
+│   │   ├── reports/        # Analytics
+│   │   ├── profile/        # User settings
+│   │   └── achievements/   # Badges & streaks
+│   ├── actions/            # Server actions
+│   └── api/                # API routes
+├── components/             # React components
+├── lib/                    # Utilities & business logic
+│   ├── db/                 # Database queries
+│   ├── streaks/            # Streak calculations
+│   ├── achievements/       # Achievement rules
+│   ├── honesty/            # Honesty scoring
+│   └── reports/            # Report aggregation
+└── types/                  # TypeScript definitions
+```
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run test` | Run Vitest unit tests |
+| `npm run test:e2e` | Run Playwright E2E tests |
+
+## Branch Summary
+
+| Branch | Purpose |
+|--------|---------|
+| `main` | Production-ready code |
+| `develop` | Integration branch |
+| `feature/*` | Feature development |
+
+## Contributing
+
+1. Create a feature branch from `develop`
+2. Make changes with atomic commits
+3. Run tests and lint before PR
+4. Create PR targeting `develop`
+
+## License
+
+MIT
