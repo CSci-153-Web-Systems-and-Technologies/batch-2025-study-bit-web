@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { signIn } from "@/app/actions/auth";
 import { Button } from "@/components/ui";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 
@@ -17,25 +17,24 @@ export default function SignInPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const supabase = createClient();
-
     async function handleSignIn(e: React.FormEvent) {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
+        const formData = new FormData();
+        formData.append("email", email);
+        formData.append("password", password);
+        formData.append("redirectTo", redirectTo);
 
-        if (error) {
-            setError(error.message);
+        const result = await signIn(formData);
+
+        if (result?.error) {
+            setError(result.error);
             setIsLoading(false);
             return;
         }
-
-        window.location.href = redirectTo;
+        // If successful, signIn will redirect automatically
     }
 
     return (
