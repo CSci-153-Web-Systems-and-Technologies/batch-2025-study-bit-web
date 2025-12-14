@@ -2,7 +2,6 @@
 
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 const isProduction = process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
 
@@ -13,8 +12,6 @@ export async function signIn(formData: FormData) {
 
     console.log("[signIn] Starting sign-in for:", email);
     console.log("[signIn] isProduction:", isProduction);
-    console.log("[signIn] VERCEL env:", process.env.VERCEL);
-    console.log("[signIn] NODE_ENV:", process.env.NODE_ENV);
 
     const cookieStore = await cookies();
 
@@ -29,9 +26,9 @@ export async function signIn(formData: FormData) {
                     return all;
                 },
                 setAll(cookiesToSet) {
-                    console.log("[signIn] setAll called with cookies:", cookiesToSet.map(c => ({ name: c.name, hasValue: !!c.value })));
+                    console.log("[signIn] setAll called with cookies:", cookiesToSet.map(c => c.name));
                     cookiesToSet.forEach(({ name, value, options }) => {
-                        console.log("[signIn] Setting cookie:", name, "secure:", isProduction);
+                        console.log("[signIn] Setting cookie:", name);
                         cookieStore.set(name, value, {
                             ...options,
                             path: "/",
@@ -56,8 +53,8 @@ export async function signIn(formData: FormData) {
         return { error: error.message };
     }
 
-    console.log("[signIn] Success! Redirecting to:", redirectTo);
-    redirect(redirectTo);
+    console.log("[signIn] Success! Returning redirectTo:", redirectTo);
+    return { success: true, redirectTo };
 }
 
 export async function signUp(formData: FormData) {

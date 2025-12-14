@@ -34,7 +34,11 @@ export default function SignInPage() {
             setIsLoading(false);
             return;
         }
-        // If successful, signIn will redirect automatically
+
+        // Redirect on client side with full page reload to ensure cookies are sent
+        if (result?.success && result?.redirectTo) {
+            window.location.href = result.redirectTo;
+        }
     }
 
     return (
