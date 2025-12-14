@@ -1,8 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const isProduction = process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
-
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
         request,
@@ -15,16 +13,12 @@ export async function updateSession(request: NextRequest) {
         return supabaseResponse;
     }
 
-    console.log("[Proxy] Request path:", request.nextUrl.pathname);
-    console.log("[Proxy] Cookies received:", request.cookies.getAll().map(c => c.name));
-
     const supabase = createServerClient(supabaseUrl, supabaseKey, {
         cookies: {
             getAll() {
                 return request.cookies.getAll();
             },
             setAll(cookiesToSet) {
-                console.log("[Proxy] Setting cookies:", cookiesToSet.map(c => c.name));
                 cookiesToSet.forEach(({ name, value }) =>
                     request.cookies.set(name, value)
                 );
@@ -32,20 +26,14 @@ export async function updateSession(request: NextRequest) {
                     request,
                 });
                 cookiesToSet.forEach(({ name, value, options }) =>
-                    supabaseResponse.cookies.set(name, value, {
-                        ...options,
-                        path: "/",
-                        sameSite: "lax",
-                        secure: isProduction,
-                        httpOnly: true,
-                    })
+                    supabaseResponse.cookies.set(name, value, options)
                 );
             },
         },
     });
 
-    const { data: { user }, error } = await supabase.auth.getUser();
-    console.log("[Proxy] User after getUser:", user?.email || "null", "Error:", error?.message || "none");
+    // IMPORTANT: Use getClaims() to validate JWT and refresh tokens
+    await supabase.auth.getClaims();
 
     return supabaseResponse;
 }
