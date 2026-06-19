@@ -5,6 +5,8 @@ import Image from "next/image";
 import { User, Mail, Clock, Flame, Calendar, Award } from "lucide-react";
 import { ProfileForm } from "@/components/ProfileForm";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
     title: "Profile",
 };

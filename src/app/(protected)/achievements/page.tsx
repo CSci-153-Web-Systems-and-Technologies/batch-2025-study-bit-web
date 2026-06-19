@@ -3,6 +3,8 @@ import { getAchievements } from "@/app/actions/achievements";
 import { AchievementCard } from "@/components/AchievementCard";
 import { createServerClient } from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
     title: "Achievements",
 };

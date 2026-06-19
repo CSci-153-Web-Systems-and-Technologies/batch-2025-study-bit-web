@@ -3,6 +3,8 @@ import { SessionsList } from "@/components/SessionsList";
 import { getSubjects } from "@/lib/db/subjects";
 import { getSessionsWithSubjects } from "@/app/actions/manualSessions";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
     title: "My Study Log",
 };

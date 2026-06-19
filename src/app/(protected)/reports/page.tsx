@@ -5,6 +5,8 @@ import { ReportFilters } from "@/components/ReportFilters";
 import { ReportCharts } from "@/components/ReportCharts";
 import { Clock, BookOpen, Target, ShieldCheck, Download } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
     title: "Reports",
 };
