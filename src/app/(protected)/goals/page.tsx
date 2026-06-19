@@ -1,6 +1,8 @@
 import { GoalsClient } from "@/components/GoalsClient";
 import { getGoalsWithProgress } from "@/app/actions/goals";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
     title: "Goals",
 };

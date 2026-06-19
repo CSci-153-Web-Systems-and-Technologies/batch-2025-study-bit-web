@@ -1,5 +1,8 @@
 import { createServerClient } from "@/lib/supabase";
 import { SettingsForm } from "@/components/SettingsForm";
+import { redirect } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
     title: "Settings",
@@ -11,7 +14,7 @@ export default async function SettingsPage() {
         data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) return null;
+    if (!user) redirect("/sign-in");
 
     const { data: profile } = await supabase
         .from("profiles")

@@ -5,6 +5,8 @@ import { getStreak } from "@/lib/db/profile";
 
 import { createServerClient } from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
     title: "Study Session",
 };
