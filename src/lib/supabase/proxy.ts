@@ -32,10 +32,8 @@ export async function updateSession(request: NextRequest) {
         },
     });
 
-    // IMPORTANT: Use getClaims() to validate JWT and refresh tokens
-    await supabase.auth.getClaims();
+    await supabase.auth.getUser();
 
-    // IMPORTANT: You *must* return the supabaseResponse object as it is.
     return supabaseResponse;
 }
 
